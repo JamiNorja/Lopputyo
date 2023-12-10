@@ -12,8 +12,8 @@ export default CustomHeader = () => (
 
 const styles = StyleSheet.create({
   background: {
-    height: 80, // Height of the header
-    width: '100%', // Width of the header
-    overflow: 'hidden', // This ensures the image doesn't spill outside the header bounds
+    height: 80, 
+    width: '100%',
+    overflow: 'hidden',
   },
 });
