@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function TableScreen({ route, navigation }) {
   const [leagueData, setLeagueData] = useState(null);
 
   const { leagueId } = route.params;
-
+  
   // Liigataulun haku
   useEffect(() => {
     const fetchLeagueTable = async () => {
       try {
+        const KEY = process.env.KEY;
+        const SECRET = process.env.SECRET;
         const response = await fetch(
-          `https://livescore-api.com/api-client/competitions/standings.json?competition_id=${leagueId}&key=3NFrFUqOUJYLmjO6&secret=pFjaIGbRe278qyftmVV1QlQK5Owr8lyx`
+          `https://livescore-api.com/api-client/competitions/standings.json?competition_id=${leagueId}&key=${KEY}&secret=${SECRET}`
         );
 
         if (!response.ok) {
@@ -29,8 +31,8 @@ export default function TableScreen({ route, navigation }) {
   }, []);
 
   // Yhen tiimin tulostus riville 
-  const renderItem = ({ item }) => (
-    <View style={styles.tableRow}>
+  const renderItem = ({ item, index }) => (
+    <View style={[styles.tableRow, { backgroundColor: index % 2 === 0 ? '#1a4022' : '#1f4f19' }]}>
       <Text style={styles.tableData} >{item.rank}.</Text>
       <Text style={styles.teamName}>{item.name}</Text>
       <Text style={styles.tableData}>{item.matches}</Text>
@@ -59,6 +61,23 @@ export default function TableScreen({ route, navigation }) {
       ) : (
         <Text>Ladataan...</Text>
       )}
+      <View style={styles.buttons}>
+      <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#28a745' }]}
+          onPress={() => {
+            route.params.saveLeague({ id: leagueId, name: route.params.leagueData.name });
+            navigation.goBack();
+          }}
+        >
+          <Text style={styles.buttonText}>Lisää suosikiksi</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#781822' }]}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.buttonText}>Palaa</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -66,12 +85,14 @@ export default function TableScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    backgroundColor: '#1f4f19',
+    padding: 10,
   },
   tableHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 2,
+    borderBottomColor: '#28a745',
     paddingHorizontal: 13,
     marginBottom: 8,
     marginTop: 10
@@ -89,15 +110,18 @@ const styles = StyleSheet.create({
   },
   rank: {
     fontWeight: 'bold',
+    color: 'white',
     fontSize: 16,
   },
   team: {
     fontWeight: 'bold',
+    color: 'white',
     fontSize: 16,
     paddingLeft: 20
   },
   played: {
     fontWeight: 'bold',
+    color: 'white',
     fontSize: 16,
     marginLeft: 60,
     marginRight: 10
@@ -105,20 +129,48 @@ const styles = StyleSheet.create({
   matches: {
     fontWeight: 'bold',
     fontSize: 16,
+    color: 'white'
   },
   points: {
     fontWeight: 'bold',
     fontSize: 16,
+    color: 'white'
   },
   teamName: {
     flex: 5,
+    fontWeight: 'bold',
+    color: 'white'
   },
   tableData: {
     flex: 2,
     textAlign: 'center',
+    fontWeight: 'bold',
+    color: 'white'
   },
   tableRecord: {
     flex: 3,
     textAlign: 'center',
+    color: 'white'
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 10,
   },
 });
