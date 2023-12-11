@@ -1,10 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { push, ref } from 'firebase/database';
+import database from '../firebase';
 
 export default function TableScreen({ route, navigation }) {
   const [leagueData, setLeagueData] = useState(null);
 
   const { leagueId } = route.params;
+  const { favorites } = route.params;
+
+
+  // Tallentaa liigan firebaseen
+  const saveLeague = (favLeague) => {
+    console.log('saveLeague:', favLeague);
+
+    // Tarkastaa onko liiga jo suosikeissa
+    const isAlreadyFavorite = favorites.find(league => league.LeagueId === favLeague.id);
+    if (!isAlreadyFavorite) {
+      push(
+        ref(database, '/liigataulukko'),
+        { 'LeagueId': favLeague.id, 'leagueName': favLeague.name }
+      );
+    } else {
+      Alert.alert("Huomautus", "Kyseinen liiga on jo suosikeissa");
+    }
+  }
   
   // Liigataulun haku
   useEffect(() => {
@@ -65,7 +85,7 @@ export default function TableScreen({ route, navigation }) {
       <TouchableOpacity
           style={[styles.button, { backgroundColor: '#28a745' }]}
           onPress={() => {
-            route.params.saveLeague({ id: leagueId, name: route.params.leagueData.name });
+            saveLeague({ id: leagueId, name: route.params.leagueData.name });
             navigation.goBack();
           }}
         >
