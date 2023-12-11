@@ -38,7 +38,7 @@ export default function SearchScreen({ navigation, route }) {
   }
   
 
-  // Lukee datan from firebasesta
+  // Lukee datan firebasesta
   useEffect(() => {
     console.log('useEffect');
     const itemsRef = ref(database, '/liigataulukko');
