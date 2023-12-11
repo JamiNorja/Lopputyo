@@ -21,24 +21,7 @@ export default function SearchScreen({ navigation, route }) {
     navigation.navigate('Login');
   }
 
-  // Tallentaa liigan firebaseen
-  const saveLeague = (favLeague) => {
-    console.log('saveLeague:', favLeague);
-    const isAlreadyFavorite = favorites.find(league => league.LeagueId === favLeague.id);
-  
-    // Tarkastaa onko liiga jo suosikeissa
-    if (!isAlreadyFavorite) {
-      push(
-        ref(database, '/liigataulukko'),
-        { 'LeagueId': favLeague.id, 'leagueName': favLeague.name }
-      );
-    } else {
-      Alert.alert("Huomautus", "Kyseinen liiga on jo suosikeissa");
-    }
-  }
-  
-
-  // Lukee datan firebasesta
+  // Lukee datan firebasesta ja asettaa datan suosikkeihin
   useEffect(() => {
     console.log('useEffect');
     const itemsRef = ref(database, '/liigataulukko');
@@ -94,8 +77,7 @@ export default function SearchScreen({ navigation, route }) {
     return (
       <ListItem
         containerStyle={{ backgroundColor: styles.container.backgroundColor }}
-        bottomDivider
-        
+        bottomDivider       
         topDivider
         onPress={() => {
           console.log('ListItem onPress');
@@ -144,7 +126,7 @@ export default function SearchScreen({ navigation, route }) {
         ]}
         onPress={() => {
           const selectedLeagueData = availableLeagues.find(league => league.id === selectedLeague);
-          navigation.navigate('Liigataulukko', { leagueId: selectedLeague, leagueData: selectedLeagueData, saveLeague: () => saveLeague({ id: selectedLeague, name: selectedLeagueData.name }) });
+          navigation.navigate('Liigataulukko', { leagueId: selectedLeague, leagueData: selectedLeagueData, favorites: favorites });
           setSelectedLeague(null);
         }}
         disabled={!selectedLeague}
